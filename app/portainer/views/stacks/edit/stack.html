@@ -44,6 +44,17 @@
                   </button>
 
                   <button
+                    authorization="PortainerStackUpdate"
+                    ng-if="regular && stack.Status === 1"
+                    ng-disabled="state.actionInProgress"
+                    class="btn btn-xs btn-info"
+                    ng-click="restartStack()"
+                  >
+                    <pr-icon icon="'refresh-cw'"></pr-icon>
+                    Restart this stack
+                  </button>
+
+                  <button
                     ng-if="regular && stack.Status === 1"
                     authorization="PortainerStackUpdate"
                     ng-disabled="state.actionInProgress"
