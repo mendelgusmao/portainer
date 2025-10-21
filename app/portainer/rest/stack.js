@@ -17,7 +17,7 @@ function StackFactory($resource, API_ENDPOINT_STACKS) {
       remove: { method: 'DELETE', params: { id: '@id', external: '@external', endpointId: '@endpointId' } },
       getStackFile: { method: 'GET', params: { id: '@id', action: 'file' } },
       migrate: { method: 'POST', params: { id: '@id', action: 'migrate', endpointId: '@endpointId' }, ignoreLoadingBar: true },
-      start: { method: 'POST', params: { id: '@id', action: 'start', endpointId: '@endpointId' } },
+      start: { method: 'POST', params: { id: '@id', action: 'start', endpointId: '@endpointId', forceRecreate: '@forceRecreate' } },
       stop: { method: 'POST', params: { id: '@id', action: 'stop', endpointId: '@endpointId' } },
       updateGit: { method: 'PUT', params: { id: '@id', action: 'git', subaction: 'redeploy' } },
       updateGitStackSettings: { method: 'POST', params: { id: '@id', action: 'git' }, ignoreLoadingBar: true },
