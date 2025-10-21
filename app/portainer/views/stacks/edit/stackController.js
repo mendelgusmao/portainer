@@ -318,6 +318,22 @@ angular.module('portainer.app').controller('StackController', [
       $scope.state.actionInProgress = false;
     }
 
+    $scope.restartStack = restartStack;
+    function restartStack() {
+      return $async(restartStackAsync);
+    }
+    async function restartStackAsync() {
+      $scope.state.actionInProgress = true;
+      const id = $scope.stack.Id;
+      try {
+        await StackService.start(endpoint.Id, id, true);
+        $state.reload();
+      } catch (err) {
+        Notifications.error('Failure', err, 'Unable to restart stack');
+      }
+      $scope.state.actionInProgress = false;
+    }
+
     function loadStack(id) {
       return $async(async () => {
         var agentProxy = $scope.applicationState.endpoint.mode.agentProxy;
