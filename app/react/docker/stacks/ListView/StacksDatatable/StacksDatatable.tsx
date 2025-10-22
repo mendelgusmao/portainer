@@ -22,11 +22,13 @@ import { DecoratedStack } from './types';
 export function StacksDatatable({
   onRemove,
   onReload,
+  onRestart,
   isImageNotificationEnabled,
   dataset,
 }: {
   onRemove: (items: Array<DecoratedStack>) => void;
   onReload: () => void;
+  onRestart: (items: Array<DecoratedStack>) => void;
   isImageNotificationEnabled: boolean;
   dataset: Array<DecoratedStack>;
 }) {
@@ -45,7 +47,11 @@ export function StacksDatatable({
       title="Stacks"
       titleIcon={Layers}
       renderTableActions={(selectedRows) => (
-        <TableActions selectedItems={selectedRows} onRemove={onRemove} />
+        <TableActions
+          selectedItems={selectedRows}
+          onRemove={onRemove}
+          onRestart={onRestart}
+        />
       )}
       renderTableSettings={(tableInstance) => (
         <TableSettingsMenus
