@@ -3,8 +3,6 @@ import { ComponentProps, PropsWithChildren, ReactNode } from 'react';
 
 import { AutomationTestingProps } from '@/types';
 
-import { confirmDelete } from '@@/modals/confirm';
-
 import { Button } from './Button';
 import { LoadingButton } from './LoadingButton';
 

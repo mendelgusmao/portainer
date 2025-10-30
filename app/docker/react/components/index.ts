@@ -136,7 +136,8 @@ const ngModule = angular
       'isImageNotificationEnabled',
       'onReload',
       'onRemove',
-      'onRestart'
+      'onRestart',
+      'onStop'
     ])
   );
 export const componentsModule = ngModule.name;
