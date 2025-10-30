@@ -3,6 +3,7 @@ import { Authorized } from '@/react/hooks/useUser';
 import { AddButton } from '@@/buttons';
 import { DeleteButton } from '@@/buttons/DeleteButton';
 import { RestartButton } from '@@/buttons/RestartButton';
+import { StopButton } from '@@/buttons/StopButton';
 
 import { DecoratedStack } from './types';
 
@@ -10,10 +11,12 @@ export function TableActions({
   selectedItems,
   onRemove,
   onRestart,
+  onStop,
 }: {
   selectedItems: Array<DecoratedStack>;
   onRemove: (items: Array<DecoratedStack>) => void;
   onRestart: (items: Array<DecoratedStack>) => void;
+  onStop: (items: Array<DecoratedStack>) => void;
 }) {
   return (
     <div className="flex items-center gap-2">
@@ -22,6 +25,14 @@ export function TableActions({
           disabled={selectedItems.length === 0}
           onClick={() => onRestart(selectedItems)}
           data-cy="stack-restartStackButton"
+        />
+      </Authorized>
+
+      <Authorized authorizations="PortainerStackUpdate">
+        <StopButton
+          disabled={selectedItems.length === 0}
+          onClick={() => onStop(selectedItems)}
+          data-cy="stack-stopStackButton"
         />
       </Authorized>
 

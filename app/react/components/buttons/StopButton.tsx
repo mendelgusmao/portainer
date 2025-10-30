@@ -19,12 +19,12 @@ type ConfirmOrClick =
       onClick(): void;
     };
 
-export function RestartButton({
+export function StopButton({
   disabled,
   size,
   children,
   isLoading,
-  loadingText = 'Restarting',
+  loadingText = 'Stopping',
   'data-cy': dataCy,
   ...props
 }: PropsWithChildren<
@@ -40,14 +40,13 @@ export function RestartButton({
     return (
       <Button
         size={size}
-        color="warninglight"
         disabled={disabled || isLoading}
         onClick={() => handleClick()}
         icon={RotateCw}
-        className="!m-0"
+        className="!m-0 btn btn-xs btn-light"
         data-cy={dataCy}
       >
-        {children || 'Restart'}
+        {children || 'Stop'}
       </Button>
     );
   }
@@ -55,16 +54,15 @@ export function RestartButton({
   return (
     <LoadingButton
       size={size}
-      color="warninglight"
       disabled={disabled}
       onClick={() => handleClick()}
       icon={RotateCw}
-      className="!m-0"
+      className="!m-0 btn btn-xs btn-light"
       data-cy={dataCy}
       isLoading={isLoading}
       loadingText={loadingText}
     >
-      {children || 'Restart'}
+      {children || 'Stop'}
     </LoadingButton>
   );
 
