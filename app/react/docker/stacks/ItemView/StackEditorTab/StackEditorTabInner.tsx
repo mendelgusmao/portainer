@@ -47,8 +47,14 @@ export function StackEditorTabInner({
     'PortainerStackUpdate'
   );
 
-  const { values, errors, setFieldValue, isValid, initialValues } =
-    useFormikContext<StackEditorFormValues>();
+  const {
+    values,
+    errors,
+    setFieldValue,
+    isValid,
+    initialValues,
+    submitForm,
+  } = useFormikContext<StackEditorFormValues>();
 
   usePreventExit(
     initialValues.stackFileContent,
@@ -120,6 +126,7 @@ export function StackEditorTabInner({
             data-cy="stack-editor"
             onVersionChange={handleVersionChange}
             versions={versions}
+            onSave={submitForm}
           />
         </div>
       </div>
