@@ -58,11 +58,19 @@ func (handler *Handler) stackStart(w http.ResponseWriter, r *http.Request) *http
 		return httperror.BadRequest("Starting a kubernetes stack is not supported", err)
 	}
 
+	forceRecreate, err := request.RetrieveBooleanQueryParameter(r, "forceRecreate", true)
+
+	if err != nil {
+		return httperror.BadRequest("Invalid query parameter: forceRecreate", err)
+	}
+
 	// Check stack status before checking endpoint access to avoid unnecessary database
 	// calls in case of invalid stack status
 	switch stack.Status {
 	case portainer.StackStatusActive:
-		return httperror.Conflict("Unable to start stack", errors.New("Stack is already active"))
+		if !forceRecreate {
+			return httperror.Conflict("Unable to start stack", errors.New("Stack is already active"))
+		}
 	case portainer.StackStatusDeploying:
 		return httperror.Conflict("Unable to start stack", errors.New("Stack deployment is already in progress"))
 	case portainer.StackStatusError:
@@ -107,7 +115,7 @@ func (handler *Handler) stackStart(w http.ResponseWriter, r *http.Request) *http
 	if err != nil {
 		return httperror.InternalServerError("Unable to check for name collision", err)
 	}
-	if !isUnique {
+	if !forceRecreate && !isUnique {
 		errorMessage := fmt.Sprintf("A stack with the name '%s' is already running", stack.Name)
 		return httperror.Conflict(errorMessage, errors.New(errorMessage))
 	}
@@ -125,7 +133,7 @@ func (handler *Handler) stackStart(w http.ResponseWriter, r *http.Request) *http
 		return httperror.Forbidden("Access denied to resource", httperrors.ErrResourceAccessDenied)
 	}
 
-	if err := handler.startStack(context.TODO(), securityContext.UserID, stack, endpoint, securityContext); err != nil {
+	if err := handler.startStack(context.TODO(), securityContext.UserID, stack, endpoint, forceRecreate, securityContext); err != nil {
 		stack.Status = portainer.StackStatusError
 		stack.DeploymentStatus = append(stack.DeploymentStatus, portainer.StackDeploymentStatus{
 			Status:  portainer.StackStatusError,
@@ -166,6 +174,7 @@ func (handler *Handler) startStack(
 	userID portainer.UserID,
 	stack *portainer.Stack,
 	endpoint *portainer.Endpoint,
+	forceRecreate bool,
 	securityContext *security.RestrictedRequestContext,
 ) error {
 	user, err := handler.DataStore.User().Read(securityContext.UserID)
@@ -188,7 +197,7 @@ func (handler *Handler) startStack(
 			return handler.StackDeployer.StartRemoteComposeStack(ctx, userID, stack, endpoint, filteredRegistries)
 		}
 
-		return handler.StackDeployer.DeployComposeStack(ctx, stack, endpoint, filteredRegistries, false, false, false)
+		return handler.StackDeployer.DeployComposeStack(ctx, stack, endpoint, filteredRegistries, false, false, forceRecreate)
 	case portainer.DockerSwarmStack:
 		stack.Name = handler.SwarmStackManager.NormalizeStackName(stack.Name)
 

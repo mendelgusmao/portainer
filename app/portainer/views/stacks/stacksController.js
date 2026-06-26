@@ -59,5 +59,51 @@ function StacksController($scope, $state, Notifications, StackService, Authentic
     getStacks();
   }
 
+  $scope.restartAction = function (selectedItems) {
+    return restartSelectedStacks(selectedItems);
+  };
+
+  $scope.stopAction = function (selectedItems) {
+    return stopSelectedStacks(selectedItems);
+  };
+
+async function restartSelectedStacks(selectedItems) {
+    const endpointId = endpoint.Id;
+
+    async function doRestart(stack) {
+      return StackService.start(endpointId, stack.Id, true)
+        .then(function success() {
+          Notifications.success('Stack successfully restarted', stack.Name);
+          var index = $scope.stacks.indexOf(stack);
+          $scope.stacks.splice(index, 1);
+        })
+        .catch(function error(err) {
+          Notifications.error('Failure', err, 'Unable to restart stack ' + stack.Name);
+        });
+    }
+
+    await processItemsInBatches(selectedItems, doRestart);
+    $state.reload();
+  }
+
+  async function stopSelectedStacks(selectedItems) {
+    const endpointId = endpoint.Id;
+
+    async function doStop(stack) {
+      return StackService.stop(endpointId, stack.Id)
+        .then(function success() {
+          Notifications.success('Stack successfully stopped', stack.Name);
+          var index = $scope.stacks.indexOf(stack);
+          $scope.stacks.splice(index, 1);
+        })
+        .catch(function error(err) {
+          Notifications.error('Failure', err, 'Unable to stop stack ' + stack.Name);
+        });
+    }
+
+    await processItemsInBatches(selectedItems, doStop);
+    $state.reload();
+  }
+
   initView();
 }

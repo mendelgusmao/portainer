@@ -387,8 +387,8 @@ angular.module('portainer.app').factory('StackService', [
     };
 
     service.start = start;
-    function start(endpointId, id) {
-      return Stack.start({ id, endpointId }).$promise;
+    function start(endpointId, id, forceRecreate = false) {
+      return Stack.start({ id, endpointId, forceRecreate }).$promise;
     }
 
     service.stop = stop;
