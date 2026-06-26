@@ -2,6 +2,7 @@ import {
   ArrowRightIcon,
   PlayIcon,
   PlusIcon,
+  RefreshCw,
   StopCircleIcon,
   Trash2Icon,
 } from 'lucide-react';
@@ -40,12 +41,14 @@ export function StackActions({
 }) {
   const router = useRouter();
   const startStackMutation = useStartStackMutation();
+  const restartStackMutation = useStartStackMutation({forceRecreate: true});
   const stopStackMutation = useStopStackMutation();
   const deleteStackMutation = useDeleteStackMutation();
   const detachFromGitMutation = useUpdateStackMutation();
 
   const isMutating =
     startStackMutation.isLoading ||
+    restartStackMutation.isLoading ||
     stopStackMutation.isLoading ||
     deleteStackMutation.isLoading ||
     detachFromGitMutation.isLoading;
@@ -54,6 +57,43 @@ export function StackActions({
 
   return (
     <div className="flex items-center gap-2">
+      {isRegular && (
+        <Authorized authorizations="PortainerStackUpdate">
+            {status === StackStatus.Active && (
+              <Button
+                icon={RefreshCw}
+                color="light"
+                size="xsmall"
+                onClick={() =>
+                  restartStackMutation.mutate(
+                    { id: stackId, environmentId, forceRecreate: true },
+                    {
+                      onError(err) {
+                        notifyError(
+                          'Failure',
+                          err as Error,
+                          'Unable to restart stack'
+                        );
+                      },
+                      onSuccess() {
+                        notifySuccess(
+                          'Success',
+                          `Stack ${stack.Name} restarted successfully`
+                        );
+                        router.stateService.reload();
+                      },
+                    }
+                  )
+                }
+                disabled={isMutating}
+                data-cy="stack-restart-btn"
+              >
+                Restart this stack
+              </Button>
+            )}
+          </Authorized>
+        )}
+
       {isRegular && (
         <Authorized authorizations="PortainerStackUpdate">
           {status === StackStatus.Active ? (

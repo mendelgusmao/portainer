@@ -4,24 +4,34 @@ import axios, { parseAxiosError } from '@/portainer/services/axios';
 import { buildStackUrl } from '@/react/common/stacks/queries/buildUrl';
 import { Stack } from '@/react/common/stacks/types';
 
-export function useStartStackMutation() {
+type StartStackPayload = {
+  id: Stack['Id'];
+  environmentId?: number;
+  forceRecreate?: boolean;
+};
+
+export function useStartStackMutation(options?: {
+  forceRecreate?: boolean;
+}) {
   return useMutation({
-    mutationFn: startStack,
+    mutationFn: (payload: StartStackPayload) =>
+      startStack({
+        ...payload,
+        forceRecreate: payload.forceRecreate ?? options?.forceRecreate,
+      }),
   });
 }
 
 async function startStack({
   id,
   environmentId,
-}: {
-  id: Stack['Id'];
-  environmentId?: number;
-}) {
+  forceRecreate,
+}: StartStackPayload) {
   try {
     const { data } = await axios.post<Stack>(
       buildStackUrl(id, 'start'),
       undefined,
-      { params: { endpointId: environmentId } }
+      { params: { endpointId: environmentId, forceRecreate } }
     );
     return data;
   } catch (e) {
